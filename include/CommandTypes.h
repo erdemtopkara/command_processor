@@ -15,3 +15,8 @@ struct FeedDataCommand {
 struct HealthQueryCommand {
     std::uint8_t param1;
 };
+
+struct HealthStatus {
+    std::uint32_t value;
+};
+

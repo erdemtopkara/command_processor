@@ -1,6 +1,9 @@
 #include "SystemController.h"
+#include "CommandParser.h"
+#include "CRC.h"
 #include <thread>
 #include <chrono>
+#include <iostream>
 
 void SystemController::init() {
     sensorTimerMs = 0;
@@ -34,3 +37,70 @@ void SystemController::run() {
         }
     }
 }
+
+std::vector<std::uint8_t>
+SystemController::handleCommandPacket(const std::vector<std::uint8_t>& packet)
+{
+    std::vector<std::uint8_t> response;
+
+    auto parsed = CommandParser::parse(packet);
+    if (!parsed.has_value()) {
+        std::cerr << "[CMD] Invalid packet" << std::endl;
+        return response;
+    }
+
+    const auto& result = parsed.value();
+
+    switch (result.commandId) {
+    case CommandId::FeedData: {
+        // Feed algorithm with incoming parameters
+        algorithm.feed(result.feedData.param1, result.feedData.param2);
+
+        // Build response:
+        // Length (0x06), Header (0x02), Command (0xF1),
+        // status (0x00 = OK), CRC (LSB, MSB)
+        response.push_back(0x06);     // length
+        response.push_back(0x02);     // header for response
+        response.push_back(0xF1);     // command id
+        response.push_back(0x00);     // status = success
+
+        std::uint16_t crc = CRC::calculate(response.data(), response.size());
+        response.push_back(static_cast<std::uint8_t>(crc & 0x00FF));        // CRC LSB
+        response.push_back(static_cast<std::uint8_t>((crc >> 8) & 0x00FF)); // CRC MSB
+        break;
+    }
+
+    case CommandId::HealthInfo: {
+        // Only respond if param1 == 0xAB
+        if (result.healthQuery.param1 != 0xAB) {
+            std::cerr << "[CMD] Health query ignored (param1 != 0xAB)" << std::endl;
+            return response;
+        }
+
+        // Build response:
+        // Length (0x0B), Header (0x02), Command (0xF2),
+        // healthStatus (uint32, little-endian), CRC (LSB, MSB)
+        response.push_back(0x0B);     // length
+        response.push_back(0x02);     // header for response
+        response.push_back(0xF2);     // command id
+
+        std::uint32_t v = healthStatus.value;
+        response.push_back(static_cast<std::uint8_t>(v & 0x000000FF));
+        response.push_back(static_cast<std::uint8_t>((v >> 8)  & 0x000000FF));
+        response.push_back(static_cast<std::uint8_t>((v >> 16) & 0x000000FF));
+        response.push_back(static_cast<std::uint8_t>((v >> 24) & 0x000000FF));
+
+        std::uint16_t crc = CRC::calculate(response.data(), response.size());
+        response.push_back(static_cast<std::uint8_t>(crc & 0x00FF));        // CRC LSB
+        response.push_back(static_cast<std::uint8_t>((crc >> 8) & 0x00FF)); // CRC MSB
+        break;
+    }
+
+    default:
+        std::cerr << "[CMD] Unsupported command" << std::endl;
+        break;
+    }
+
+    return response;
+}
+
