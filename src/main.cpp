@@ -1,6 +1,8 @@
-#include <iostream>
+#include "SystemController.h"
 
 int main() {
-    std::cout << "Command processor skeleton\n";
+    SystemController system;
+    system.init();
+    system.run();
     return 0;
 }
