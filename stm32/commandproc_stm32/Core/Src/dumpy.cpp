@@ -1,11 +1,17 @@
+#include "uart_ring.h"
+
 extern "C" void App_10msTask(void)
 {
-    // TODO: Called every 10 ms (scheduler hook)
-    // Command processor periodic update will be added here.
+    uint8_t byte;
+
+    // Poll UART RX ring buffer
+    while (UartRing_GetByte(&byte))
+    {
+        // TODO: Later this will feed CommandProcessor::feedByte(byte)
+    }
 }
 
 extern "C" void App_45msTask(void)
 {
-    // TODO: Called every 45 ms (scheduler hook)
-    // Sensor read or periodic algorithms will run here.
+    // TODO: 45 ms periodic task
 }
