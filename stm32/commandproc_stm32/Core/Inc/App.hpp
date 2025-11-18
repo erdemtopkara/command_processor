@@ -12,10 +12,7 @@ class App
 public:
     App();
 
-    // Executed every 10 ms
     void task10ms();
-
-    // Executed every 45 ms
     void task45ms();
 
 private:

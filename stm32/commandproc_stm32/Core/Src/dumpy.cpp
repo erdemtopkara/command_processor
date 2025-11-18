@@ -1,17 +1,13 @@
-#include "uart_ring.h"
+#include "App.hpp"
+
+static App app;
 
 extern "C" void App_10msTask(void)
 {
-    uint8_t byte;
-
-    // Poll UART RX ring buffer
-    while (UartRing_GetByte(&byte))
-    {
-        // TODO: Later this will feed CommandProcessor::feedByte(byte)
-    }
+    app.task10ms();
 }
 
 extern "C" void App_45msTask(void)
 {
-    // TODO: 45 ms periodic task
+    app.task45ms();
 }

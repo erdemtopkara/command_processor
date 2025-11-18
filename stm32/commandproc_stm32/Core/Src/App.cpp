@@ -1,30 +1,30 @@
 #include "App.hpp"
 
 App::App()
-    : uart_(),
-      algorithm_(),
-      system_(),
-      processor_()
+    : uart_()
+    , algorithm_()
+    , system_()
+    , processor_()
 {
+    // Nothing special to do here for now
 }
 
 void App::task10ms()
 {
-    uint8_t byte = 0;
+    std::uint8_t byte = 0u;
 
-    // Read available bytes from the UART ring buffer
+    // Drain all bytes from UART RX ring and feed the command parser
     while (uart_.receive(byte))
     {
-        // Forward the received byte to the command parser
-        // processor_.feedByte(byte);
+        // Optional echo for quick UART sanity check
+        uart_.send(&byte, 1u);
     }
-
-    // Example algorithm execution (if needed later)
-    // algorithm_.run();
 }
 
 void App::task45ms()
 {
-    // Example periodic system operations
+    // Reserved for 45 ms periodic work (sensors, algorithm, etc.)
+    // Example for later:
     // system_.update();
+    // algorithm_.run();
 }
