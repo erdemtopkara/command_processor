@@ -45,7 +45,7 @@ static void printHexPacket(const std::vector<std::uint8_t>& packet) {
     std::cout << std::dec << std::endl;
 }
 
-int main() {
+/*int main() {
     SystemController system;
     system.init();
 
@@ -59,4 +59,4 @@ int main() {
     printHexPacket(response);
 
     return 0;
-}
+}*/
