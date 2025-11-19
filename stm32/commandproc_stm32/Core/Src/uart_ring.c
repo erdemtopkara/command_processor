@@ -4,7 +4,7 @@
 
 static UART_HandleTypeDef *s_huart      = NULL;
 static uint8_t             s_rxByte     = 0;
-static uint8_t             s_buffer[UART_RING_BUFFER_SIZE];
+static uint8_t             s_buffer[UART_RING_BUFFER_SIZE]; //receive data buffer
 static volatile uint16_t   s_head       = 0;
 static volatile uint16_t   s_tail       = 0;
 

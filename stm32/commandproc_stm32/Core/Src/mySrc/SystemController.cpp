@@ -5,30 +5,41 @@
 #include <chrono>
 #include <iostream>
 
+uint8_t TimerFlagforSensorReadRequest;
+uint8_t UartReceiveFlagRequest;
 void SystemController::init() {
-    sensorTimerMs = 0;
-    // TODO: initialize other components if needed
+
 }
 
 void SystemController::run() {
     using namespace std::chrono;
-
     const std::uint32_t mainLoopPeriodMs = 10;
-    const std::uint32_t sensorPeriodMs   = 45;
 
     while (true) {
         auto loopStart = steady_clock::now();
 
-        // 10 ms algorithm task
-        algorithm.run();
-
         // Sensor scheduling: every ~45 ms
-        sensorTimerMs += mainLoopPeriodMs;
-        if (sensorTimerMs >= sensorPeriodMs) {
+        if (TimerFlagforSensorReadRequest == 1U)
+        {
             sensorManager.readSensors();
-            sensorTimerMs = 0;
+            TimerFlagforSensorReadRequest = 0U;
         }
 
+        //uart command handler
+        if (UartReceiveFlagRequest == 1)
+        {
+            std::uint8_t ReceiveRxData[10U];
+            for (uint8_t i = 0; i < 10U; i++)
+            {
+                UartComm.receive(ReceiveRxData[i]);
+            }
+            std::vector<std::uint8_t> packet(ReceiveRxData, ReceiveRxData + 10);
+            auto response = handleCommandPacket(packet);
+            const uint8_t *data = response.data();
+            uint16_t len = response.size();
+            UartComm.send(data, len); // transmit uart
+            UartReceiveFlagRequest = 0;
+        }
         auto loopEnd   = steady_clock::now();
         auto elapsedMs = duration_cast<milliseconds>(loopEnd - loopStart).count();
 

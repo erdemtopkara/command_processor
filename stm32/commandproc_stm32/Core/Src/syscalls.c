@@ -174,3 +174,24 @@ int _execve(char *name, char **argv, char **env)
   errno = ENOMEM;
   return -1;
 }
+int _gettimeofday(struct timeval *tv, void *tz)
+{
+    if (tv)
+    {
+        tv->tv_sec  = 0;
+        tv->tv_usec = 0;
+    }
+    return 0;
+}
+
+unsigned int sleep(unsigned int seconds)
+{
+    HAL_Delay(seconds * 1000);
+    return 0;
+}
+
+int usleep(useconds_t usec)
+{
+    HAL_Delay(usec / 1000);   // µs değil ms!
+    return 0;
+}

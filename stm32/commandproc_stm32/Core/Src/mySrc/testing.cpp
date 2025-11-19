@@ -49,14 +49,14 @@ static void printHexPacket(const std::vector<std::uint8_t>& packet) {
     SystemController system;
     system.init();
 
-    auto request = readHexPacketFromStdIn();
+    auto request = readHexPacketFromStdIn();//receive uart
     if (request.empty()) {
         std::cout << "Empty input. Exiting." << std::endl;
         return 0;
     }
 
     auto response = system.handleCommandPacket(request);
-    printHexPacket(response);
+    printHexPacket(response); //transmit uart
 
     return 0;
 }*/

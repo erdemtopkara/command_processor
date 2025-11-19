@@ -18,7 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "App.hpp"
+#include "SystemController.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -106,28 +106,17 @@ int main(void)
   MX_TIM1_Init();
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
-
+  SystemController system;
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-/*  while (1)
+  while (1)
   {
-     USER CODE END WHILE
-
-     USER CODE BEGIN 3
-    if (g_flag10ms)
-    {
-      g_flag10ms = 0;
-      localApp.task10ms();
-    }
-
-    if (g_flag45ms)
-    {
-      g_flag45ms = 0;
-      localApp.task45ms();
-    }
-  }*/
+  //   USER CODE END WHILE
+  system.run();
+   //  USER CODE BEGIN 3
+  }
 
   /* USER CODE END 3 */
 }
