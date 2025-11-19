@@ -28,16 +28,18 @@ void SystemController::run() {
         //uart command handler
         if (UartReceiveFlagRequest == 1)
         {
-            std::uint8_t ReceiveRxData[10U];
-            for (uint8_t i = 0; i < 10U; i++)
+        	uint8_t length = 0;
+        	//first byte length
+        	UartComm.receive(length);
+            std::uint8_t ReceiveRxData[length];
+            ReceiveRxData[0] = length;
+            for (uint8_t i = 1; i < length; i++)
             {
                 UartComm.receive(ReceiveRxData[i]);
             }
-            std::vector<std::uint8_t> packet(ReceiveRxData, ReceiveRxData + 10);
+            std::vector<std::uint8_t> packet(ReceiveRxData, ReceiveRxData + length); // casting
             auto response = handleCommandPacket(packet);
-            const uint8_t *data = response.data();
-            uint16_t len = response.size();
-            UartComm.send(data, len); // transmit uart
+            UartComm.send(response.data(), response.size()); // transmit uart
             UartReceiveFlagRequest = 0;
         }
         auto loopEnd   = steady_clock::now();

@@ -25,19 +25,8 @@ CommandParser::parse(const std::vector<std::uint8_t>& packet)
         return std::nullopt; // too short
     }
 
-    const std::uint8_t lengthByte = packet[0];
-    if (lengthByte != packet.size()) {
-        // Length byte should match actual packet size
-        return std::nullopt;
-    }
-
     const std::uint8_t header   = packet[1];
     const std::uint8_t command  = packet[2];
-
-    // Last two bytes are CRC (LSB, MSB)
-    if (packet.size() < 3 + 2) {
-        return std::nullopt;
-    }
 
     const std::size_t crcIndex = packet.size() - 2;
     const std::uint16_t receivedCrc = readU16(&packet[crcIndex]);
